@@ -160,6 +160,7 @@ export function LoginPage() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
+              method="post"
               className="mt-6 flex flex-col gap-4"
               noValidate
             >

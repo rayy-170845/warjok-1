@@ -99,6 +99,7 @@ export function SignupForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
+      method="post"
       className={cn("flex flex-col gap-6", className)}
       noValidate
       {...props}

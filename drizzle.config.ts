@@ -17,7 +17,6 @@ export default defineConfig({
     "lookups",
     "settings",
     "audit",
-    "demo",
   ],
   dbCredentials: {
     url: process.env.DATABASE_URL!,
