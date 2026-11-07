@@ -181,6 +181,11 @@ export async function POST(request: Request) {
             )
             .limit(1)
         : [];
+      if (payload.customerId && !customer) {
+        throw new Error(
+          "Pelanggan yang dipilih tidak ditemukan. Pilih kembali pelanggan atau gunakan Walk-in Customer."
+        );
+      }
       const memberDiscountRate = Number(settings?.memberDiscountRate ?? 0);
 
       const items: {
