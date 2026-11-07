@@ -14,6 +14,11 @@ import {
   transactions,
 } from "@/server/db/schema";
 
+const hasIsolatedTestDatabase =
+  Boolean(process.env.WARJOK_TEST_DATABASE_URL) &&
+  process.env.WARJOK_TEST_DATABASE_URL !== process.env.DATABASE_URL;
+const databaseTest = hasIsolatedTestDatabase ? test : test.skip;
+
 function uniqueId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
@@ -25,7 +30,7 @@ function hashRequest(body: unknown) {
     .digest("hex");
 }
 
-test("checkout persists transaction, deducts stock, records movement atomically", async () => {
+databaseTest("checkout persists transaction, deducts stock, records movement atomically", async () => {
   // Buat produk dengan stok yang diketahui.
   const productId = uniqueId("prod-checkout");
   await db.insert(products).values({
@@ -216,7 +221,7 @@ test("checkout persists transaction, deducts stock, records movement atomically"
   await db.delete(products).where(eq(products.id, productId));
 });
 
-test("checkout rollback when stock insufficient", async () => {
+databaseTest("checkout rollback when stock insufficient", async () => {
   const productId = uniqueId("prod-rollback");
   await db.insert(products).values({
     id: productId,

@@ -97,7 +97,7 @@ export default function PosPage() {
   const posCategories = useMemo(
     () => [
       { id: 'all', label: 'Semua', icon: null, count: posProducts.length },
-      ...categories.map((cat) => ({
+      ...categories.filter((cat) => cat.status === 'active').map((cat) => ({
         id: cat.id,
         label: cat.name,
         icon: null,
@@ -124,10 +124,10 @@ export default function PosPage() {
   const totals = useMemo(
     () =>
       computeTotals(cart.subtotal, effectiveMember, {
-        memberDiscountRate: 0.1,
-        taxRate: 0.1,
+        memberDiscountRate: settings.memberDiscountRate,
+        taxRate: settings.taxRate,
       }),
-    [cart.subtotal, effectiveMember],
+    [cart.subtotal, effectiveMember, settings.memberDiscountRate, settings.taxRate],
   )
 
   const quantityByProductId = useMemo(() => {
@@ -251,8 +251,8 @@ export default function PosPage() {
             totals={totals}
             member={effectiveMember}
             memberEligible={memberEligible}
-            memberDiscountRate={0.1}
-            taxRate={0.1}
+            memberDiscountRate={settings.memberDiscountRate}
+            taxRate={settings.taxRate}
             onToggleMember={() => setMemberApplied((value) => !value)}
             customerName={customerName}
             onCustomerNameChange={setCustomerName}
@@ -295,7 +295,7 @@ export default function PosPage() {
         onOpenChange={setCustomerPickerOpen}
         customers={customers}
         transactions={transactions}
-        memberDiscountRate={0.1}
+        memberDiscountRate={settings.memberDiscountRate}
         selectedId={customerId}
         onSelect={handleSelectCustomer}
       />

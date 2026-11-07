@@ -14,6 +14,7 @@ import type {
 } from "@/types/business";
 import { db } from "@/server/db";
 import {
+  businesses,
   businessSettings,
   categories,
   customers,
@@ -23,6 +24,7 @@ import {
   products,
   receiptSettings,
   staff,
+  stores,
   stockAdjustments,
   stockMovements,
   transactionItems,
@@ -34,6 +36,7 @@ const number = (value: string | null | undefined) => Number(value ?? 0);
 const iso = (value: Date | string) => new Date(value).toISOString();
 
 export type BusinessData = {
+  setupRequired: boolean;
   categories: Category[];
   products: Product[];
   customers: Customer[];
@@ -163,6 +166,8 @@ export async function getBusinessData(query: BusinessQuery = {}): Promise<Busine
   if (status) staffFilters.push(eq(staff.status, status));
 
   const [
+    businessRows,
+    storeRows,
     categoryRows,
     productRows,
     customerRows,
@@ -173,6 +178,16 @@ export async function getBusinessData(query: BusinessQuery = {}): Promise<Busine
     itemRows,
     movementRows,
   ] = await Promise.all([
+    db
+      .select({ id: businesses.id })
+      .from(businesses)
+      .where(eq(businesses.id, DEFAULT_BUSINESS_ID))
+      .limit(1),
+    db
+      .select({ id: stores.id })
+      .from(stores)
+      .where(eq(stores.id, DEFAULT_STORE_ID))
+      .limit(1),
     db
       .select()
       .from(categories)
@@ -301,6 +316,7 @@ export async function getBusinessData(query: BusinessQuery = {}): Promise<Busine
     : BUSINESS_SETTINGS;
 
   return {
+    setupRequired: businessRows.length === 0 || storeRows.length === 0,
     categories: categoryRows
       .map((row) => ({
         id: row.id,

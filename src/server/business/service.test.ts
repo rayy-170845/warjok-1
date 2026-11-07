@@ -13,6 +13,11 @@ import {
 } from "@/server/db/schema";
 import type { ActingUser } from "@/server/business/service";
 
+const hasIsolatedTestDatabase =
+  Boolean(process.env.WARJOK_TEST_DATABASE_URL) &&
+  process.env.WARJOK_TEST_DATABASE_URL !== process.env.DATABASE_URL;
+const databaseTest = hasIsolatedTestDatabase ? test : test.skip;
+
 const ACTING: ActingUser = {
   actingUserId: "test-user",
   actingUserRole: "owner",
@@ -22,7 +27,7 @@ function uniqueId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-test("getBusinessData returns real database records", async () => {
+databaseTest("getBusinessData returns real database records", async () => {
   const data = await getBusinessData();
 
   expect(Array.isArray(data.categories)).toBe(true);
@@ -46,7 +51,7 @@ test("getBusinessData returns real database records", async () => {
   expect(typeof sampleProduct.stock).toBe("number");
 });
 
-test("getBusinessData supports server-side pagination", async () => {
+databaseTest("getBusinessData supports server-side pagination", async () => {
   const page1 = await getBusinessData({ page: 1, pageSize: 2 });
   const page2 = await getBusinessData({ page: 2, pageSize: 2 });
 
@@ -65,7 +70,7 @@ test("getBusinessData supports server-side pagination", async () => {
   }
 });
 
-test("getBusinessData supports server-side search filter", async () => {
+databaseTest("getBusinessData supports server-side search filter", async () => {
   const all = await getBusinessData({ pageSize: 100 });
   const name = all.products[0].name;
   const keyword = name.slice(0, 3);
@@ -80,7 +85,7 @@ test("getBusinessData supports server-side search filter", async () => {
   }
 });
 
-test("category.create and category.delete via database", async () => {
+databaseTest("category.create and category.delete via database", async () => {
   const id = uniqueId("cat-test");
 
   const createResult = await mutateBusiness(
@@ -119,7 +124,7 @@ test("category.create and category.delete via database", async () => {
   expect(deleted).toBeUndefined();
 });
 
-test("product.create, update, and delete via database", async () => {
+databaseTest("product.create, update, and delete via database", async () => {
   const id = uniqueId("prod-test");
 
   const createResult = await mutateBusiness(
@@ -191,7 +196,7 @@ test("product.create, update, and delete via database", async () => {
   expect(deleted).toBeUndefined();
 });
 
-test("stock.adjust updates product stock and records movement", async () => {
+databaseTest("stock.adjust updates product stock and records movement", async () => {
   const id = uniqueId("prod-stock");
 
   await mutateBusiness(
@@ -250,7 +255,7 @@ test("stock.adjust updates product stock and records movement", async () => {
   await db.delete(products).where(eq(products.id, id));
 });
 
-test("checkout idempotency key cleanup", async () => {
+databaseTest("checkout idempotency key cleanup", async () => {
   const key = `idem-${uniqueId("key")}`;
 
   // Simpan idempotency key di database.

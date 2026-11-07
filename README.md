@@ -52,6 +52,7 @@ bun start        # Start production server
 bun lint         # oxlint
 bun run typecheck # tsc --noEmit
 bun test         # bun test
+bun run test:integration # database integration tests (dedicated test database only)
 
 bun db:generate  # drizzle-kit generate
 bun db:migrate   # drizzle-kit migrate
@@ -60,10 +61,17 @@ bun db:seed      # seed business/demo data
 bun db:studio    # drizzle-kit studio
 ```
 
+Database integration tests are skipped unless `WARJOK_TEST_DATABASE_URL` points
+to a dedicated test database that is different from `DATABASE_URL`. Apply the
+schema and seed that test database before running `bun run test:integration`.
+Never point integration tests at production; they create and remove test rows.
+
 ## Database & Auth Notes
 - Drizzle schema lives in `src/server/db/schema/` and outputs migrations to `drizzle/`. Review migrations before applying to shared/production databases.
 - Neon Auth tables (`neon_auth`) are managed by Neon — avoid modifying them via app migrations.
 - RBAC/profile data is stored in app tables (e.g. `core.UserProfiles`, `core.Roles`). After a DB reset, ensure required roles/permissions are seeded and user profiles are re-established on login as needed.
+- When the default business or store is missing, an owner is redirected to `/setup`. The setup form creates only the business, store, and minimal settings after explicit submission; it does not create sample categories or products.
+- `bun run db:seed` creates sample business data. Do not run it against production unless you explicitly intend to populate that database.
 
 ## Deploy (Vercel)
 1. Push to the connected branch (e.g. `master`).

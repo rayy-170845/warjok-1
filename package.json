@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "oxlint .",
     "test": "bun test",
+    "test:integration": "bun test src/server/business",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

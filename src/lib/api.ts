@@ -11,6 +11,7 @@ import type {
 } from "@/types/business"
 
 export type BusinessData = {
+  setupRequired: boolean
   categories: Category[]
   products: Product[]
   customers: Customer[]
@@ -21,8 +22,7 @@ export type BusinessData = {
 }
 
 async function json<T>(response: Response): Promise<T> {
-  const data = (await response.json().catch(() => ({}))) as T
-  return data
+  return (await response.json()) as T
 }
 
 export async function fetchBusinessData(): Promise<BusinessData> {

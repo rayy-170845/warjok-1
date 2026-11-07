@@ -4,6 +4,7 @@ import { useEffect } from "react"
 
 import { QueryClientProvider } from "@tanstack/react-query"
 
+import { ErrorState } from "@/components/shared/error-state"
 import { queryClient } from "@/lib/query-client"
 import { useBusinessQuery } from "@/hooks/use-business"
 import { useBusinessStore } from "@/stores/business-store"
@@ -23,7 +24,7 @@ export function BusinessDataProvider({
   children: React.ReactNode
 }) {
   const ready = useBusinessStore((state) => state.ready)
-  const { data, error, isPending } = useBusinessQuery({ enabled: true })
+  const { data, error, isPending, refetch } = useBusinessQuery({ enabled: true })
 
   useEffect(() => {
     // Sync whenever the query yields new data (first load, refetch after a
@@ -40,6 +41,7 @@ export function BusinessDataProvider({
     // state instead of spinning forever.
     if (!isPending && !ready) {
       useBusinessStore.setState({
+        setupRequired: false,
         categories: [],
         products: [],
         customers: [],
@@ -64,7 +66,13 @@ export function BusinessDataProvider({
   }, [data, isPending, ready])
 
   if (error) {
-    console.error("Business data query error:", error)
+    return (
+      <ErrorState
+        title="Data Warjok gagal dimuat"
+        description={error.message || "Periksa koneksi lalu coba lagi."}
+        onRetry={() => void refetch()}
+      />
+    )
   }
 
   return children

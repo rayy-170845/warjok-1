@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -182,10 +183,20 @@ function ProductFormBody({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kategori</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={categories.length === 0}
+                >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih kategori" />
+                      <SelectValue
+                        placeholder={
+                          categories.length === 0
+                            ? 'Belum ada kategori'
+                            : 'Pilih kategori'
+                        }
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -196,6 +207,18 @@ function ProductFormBody({
                     ))}
                   </SelectContent>
                 </Select>
+                {categories.length === 0 && (
+                  <FormDescription>
+                    Buat kategori terlebih dahulu di{' '}
+                    <Link
+                      href="/categories"
+                      className="font-medium text-foreground underline underline-offset-4"
+                    >
+                      halaman Kategori
+                    </Link>
+                    .
+                  </FormDescription>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -369,7 +392,7 @@ function ProductFormBody({
           <Button type="button" variant="outline" onClick={onCancel}>
             Batal
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={categories.length === 0}>
             {product ? 'Simpan perubahan' : 'Tambah produk'}
           </Button>
         </DialogFooter>

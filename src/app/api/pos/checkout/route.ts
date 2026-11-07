@@ -8,6 +8,7 @@ import { db } from "@/server/db";
 import {
   businessSettings,
   checkoutIdempotency,
+  customers,
   DEFAULT_BUSINESS_ID,
   DEFAULT_STORE_ID,
   inventory,
@@ -168,6 +169,19 @@ export async function POST(request: Request) {
       const taxRate = settings
         ? Number(settings.taxRate)
         : Number(defaultTaxRate?.rate ?? 0);
+      const [customer] = payload.customerId
+        ? await tx
+            .select({ id: customers.id })
+            .from(customers)
+            .where(
+              and(
+                eq(customers.id, payload.customerId),
+                eq(customers.businessId, DEFAULT_BUSINESS_ID)
+              )
+            )
+            .limit(1)
+        : [];
+      const memberDiscountRate = Number(settings?.memberDiscountRate ?? 0);
 
       const items: {
         productId: string;
@@ -209,7 +223,12 @@ export async function POST(request: Request) {
       }
 
       subtotal = roundMoney(subtotal);
-      const discount = roundMoney(Math.min(payload.discount, subtotal));
+      const eligibleDiscount = customer
+        ? roundMoney(subtotal * memberDiscountRate)
+        : 0;
+      const discount = roundMoney(
+        Math.min(payload.discount, subtotal, eligibleDiscount)
+      );
       const taxableSubtotal = roundMoney(subtotal - discount);
       const tax = roundMoney(taxableSubtotal * taxRate);
       const total = roundMoney(taxableSubtotal + tax);

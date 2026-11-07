@@ -1,6 +1,6 @@
 /** Tax and member-discount rules shared by the cart and checkout screens. */
-export const TAX_RATE = 0.1
-export const MEMBER_DISCOUNT_RATE = 0.1
+export const TAX_RATE = 0
+export const MEMBER_DISCOUNT_RATE = 0
 
 export type PosTotals = {
   subtotal: number

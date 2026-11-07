@@ -318,7 +318,12 @@ function CheckoutBody({
       setReceipt({
         orderId: receiptNumber,
         lines,
-        totals: { ...totals, total: receiptTotal },
+        totals: {
+          subtotal: serverResult.subtotal ?? totals.subtotal,
+          discount: serverResult.discount ?? totals.discount,
+          tax: serverResult.tax ?? totals.tax,
+          total: receiptTotal,
+        },
         method,
         cashReceived: receiptCashReceived,
         change: receiptChange,

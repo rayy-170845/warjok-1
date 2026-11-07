@@ -64,6 +64,7 @@ type BusinessState = {
   movements: StockMovement[]
   settings: BusinessSettings
   ready: boolean
+  setupRequired: boolean
 
   hydrate: () => Promise<void>
 
@@ -157,6 +158,7 @@ export const useBusinessStore = create<BusinessState>()((set, get) => ({
     receiptFooter: 'Terima kasih • Warjok',
   },
   ready: false,
+  setupRequired: false,
 
   hydrate: async () => {
     // Real data is fetched once by BusinessDataProvider via TanStack Query and

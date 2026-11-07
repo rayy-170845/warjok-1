@@ -143,6 +143,13 @@ export function LoginForm({
           <FieldError errors={[errors.password]} />
         </Field>
 
+        <Link
+          href="/forgot-password"
+          className="-mt-3 self-end text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+        >
+          Lupa kata sandi?
+        </Link>
+
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? (
             <Loader2Icon className="animate-spin" />

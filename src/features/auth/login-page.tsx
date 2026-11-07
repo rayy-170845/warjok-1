@@ -224,6 +224,13 @@ export function LoginPage() {
                 )}
               />
 
+              <Link
+                href="/forgot-password"
+                className="-mt-2 self-end text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Lupa kata sandi?
+              </Link>
+
               <Button type="submit" className="mt-1 w-full">
                 <LockKeyholeIcon aria-hidden="true" />
                 Masuk
